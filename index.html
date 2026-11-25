@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#04070E">
+  <meta name="description" content="Aer — a live weather window for Round Rock, Texas.">
+  <title>Aer — Round Rock</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230A76F2'/%3E%3Ccircle cx='25' cy='23' r='10' fill='%23FFE071'/%3E%3Cpath d='M20 49a11 11 0 0 1-2-21.8 14.5 14.5 0 0 1 28 5.4A11 11 0 0 1 44 49H20Z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-weather="clear" data-phase="night" class="is-booting">
+  <svg class="svg-sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="g-sun" x1="0" y1="0" x2="0" y2="1">
+        <stop stop-color="#FFE66D"></stop>
+        <stop offset="1" stop-color="#FF9F0A"></stop>
+      </linearGradient>
+      <linearGradient id="g-cloud" x1="0" y1="0" x2="0" y2="1">
+        <stop stop-color="#FFFFFF"></stop>
+        <stop offset="1" stop-color="#D7E0EA"></stop>
+      </linearGradient>
+      <linearGradient id="g-cloud-dark" x1="0" y1="0" x2="0" y2="1">
+        <stop stop-color="#E3EAF2"></stop>
+        <stop offset="1" stop-color="#A8B6C6"></stop>
+      </linearGradient>
+      <linearGradient id="g-moon" x1="0" y1="0" x2="0" y2="1">
+        <stop stop-color="#F8FBFF"></stop>
+        <stop offset="1" stop-color="#C8D8EC"></stop>
+      </linearGradient>
+      <linearGradient id="g-drop" x1="0" y1="0" x2="0" y2="1">
+        <stop stop-color="#A7E8FF"></stop>
+        <stop offset="1" stop-color="#38B6F1"></stop>
+      </linearGradient>
+      <linearGradient id="g-bolt" x1="0" y1="0" x2="0" y2="1">
+        <stop stop-color="#FFE873"></stop>
+        <stop offset="1" stop-color="#FFB800"></stop>
+      </linearGradient>
+    </defs>
+
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="10.5" cy="10.5" r="6.6"></circle>
+      <path d="m15.5 15.5 5.1 5.1"></path>
+    </symbol>
+    <symbol id="i-locate" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="6.4"></circle>
+      <circle cx="12" cy="12" r="1.9"></circle>
+      <path d="M12 2.2v4.2M12 17.6v4.2M2.2 12h4.2M17.6 12h4.2"></path>
+    </symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24">
+      <path d="M20 11a8 8 0 1 0-2.4 6.6"></path>
+      <path d="M20 4.4v6.8h-6.8"></path>
+    </symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24">
+      <path d="M4 12h16M13.5 5.8 19.7 12l-6.2 6.2"></path>
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="m6 6 12 12M18 6 6 18"></path>
+    </symbol>
+    <symbol id="i-droplet" viewBox="0 0 24 24">
+      <path d="M12 3.2c3 3.8 5.5 6.6 5.5 9.5a5.5 5.5 0 0 1-11 0c0-2.9 2.5-5.7 5.5-9.5Z"></path>
+    </symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24">
+      <path d="M2.8 12S6.5 5.8 12 5.8 21.2 12 21.2 12 17.5 18.2 12 18.2 2.8 12 2.8 12Z"></path>
+      <circle cx="12" cy="12" r="2.8"></circle>
+    </symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24">
+      <path d="M4 16.5a8 8 0 1 1 16 0"></path>
+      <path d="m12 13 3.5-3.5"></path>
+      <circle cx="12" cy="13" r="1.2"></circle>
+    </symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24">
+      <path d="M19.5 4.5C11 4.8 5.5 8.2 5.5 14a4.5 4.5 0 0 0 7.7 3.2c5.2-4.8 6.3-12.7 6.3-12.7Z"></path>
+      <path d="M4 20c2.5-6 7-9.4 12-11"></path>
+    </symbol>
+    <symbol id="i-uv" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9 6.7 6.7M17.3 17.3l1.8 1.8M19.1 4.9 17.3 6.7M6.7 17.3 4.9 19.1"></path>
+    </symbol>
+    <symbol id="i-wind" viewBox="0 0 24 24">
+      <path d="M3 8.2h9.8A3.2 3.2 0 1 0 9.6 5M3 12.4h14.7a3.1 3.1 0 1 1-3.1 3.1M3 16.6h7.5"></path>
+    </symbol>
+
+    <symbol id="i-sun" viewBox="0 0 24 24">
+      <g stroke="url(#g-sun)" stroke-width="1.7" stroke-linecap="round">
+        <path d="M12 2.1v2.3M12 19.6v2.3M2.1 12h2.3M19.6 12h2.3M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"></path>
+      </g>
+      <circle cx="12" cy="12" r="4.9" fill="url(#g-sun)"></circle>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24">
+      <path d="M20.6 14.5A8.8 8.8 0 0 1 9.5 3.4 8.8 8.8 0 1 0 20.6 14.5Z" fill="url(#g-moon)"></path>
+      <circle cx="19.2" cy="5.7" r=".8" fill="#FFFFFF" opacity=".8"></circle>
+      <circle cx="21.2" cy="8.4" r=".5" fill="#FFFFFF" opacity=".55"></circle>
+    </symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24">
+      <path d="M7 18.8a4.2 4.2 0 0 1-.7-8.3A5.7 5.7 0 0 1 17.2 9a4.7 4.7 0 0 1 .5 9.8H7Z" fill="url(#g-cloud)"></path>
+      <path d="M7.3 16.9a2.6 2.6 0 0 1 .1-5.2c.3 0 .6 0 .8.1" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" opacity=".5"></path>
+    </symbol>
+    <symbol id="i-partly" viewBox="0 0 24 24">
+      <circle cx="8.6" cy="7.6" r="3.4" fill="url(#g-sun)"></circle>
+      <g stroke="url(#g-sun)" stroke-width="1.3" stroke-linecap="round">
+        <path d="M8.6 1.7v1.5M2.7 7.6h1.5M4.5 3.5 5.6 4.6M12.7 3.5l-1.1 1.1"></path>
+      </g>
+      <path d="M8 19.2a3.9 3.9 0 0 1-.6-7.6 5.3 5.3 0 0 1 10.1 1.9 4.4 4.4 0 0 1-.4 5.7H8Z" fill="url(#g-cloud)"></path>
+    </symbol>
+    <symbol id="i-partly-night" viewBox="0 0 24 24">
+      <path d="M13 9.2A4.8 4.8 0 0 1 6.8 3a4.9 4.9 0 1 0 6.2 6.2Z" fill="url(#g-moon)"></path>
+      <path d="M8 19.2a3.9 3.9 0 0 1-.6-7.6 5.3 5.3 0 0 1 10.1 1.9 4.4 4.4 0 0 1-.4 5.7H8Z" fill="url(#g-cloud)"></path>
+    </symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24">
+      <path d="M7 16.3a4 4 0 0 1-.7-7.9A5.5 5.5 0 0 1 16.9 6.8a4.6 4.6 0 0 1 .5 9.5H7Z" fill="url(#g-cloud-dark)"></path>
+      <g stroke="url(#g-drop)" stroke-width="1.9" stroke-linecap="round">
+        <path d="m8.2 19.1-1 2M12.2 19.4l-1 2.1M16.3 19.1l-1 2"></path>
+      </g>
+    </symbol>
+    <symbol id="i-drizzle" viewBox="0 0 24 24">
+      <path d="M7 16.3a4 4 0 0 1-.7-7.9A5.5 5.5 0 0 1 16.9 6.8a4.6 4.6 0 0 1 .5 9.5H7Z" fill="url(#g-cloud-dark)"></path>
+      <g stroke="url(#g-drop)" stroke-width="1.7" stroke-linecap="round">
+        <path d="M9 19.2v1.8M13 19.4v1.6M17 19.2v1.8"></path>
+      </g>
+    </symbol>
+    <symbol id="i-storm" viewBox="0 0 24 24">
+      <path d="M7 15.9a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 16.9 6.3a4.6 4.6 0 0 1 .5 9.5H7Z" fill="url(#g-cloud-dark)"></path>
+      <path d="m13.2 15.2-2.9 4.3h2.6l-1.2 3.3 3.9-5.2h-2.7l1.4-2.4Z" fill="url(#g-bolt)"></path>
+    </symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24">
+      <path d="M7 15.8a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 16.9 6.3a4.6 4.6 0 0 1 .5 9.5H7Z" fill="url(#g-cloud-dark)"></path>
+      <g stroke="#DDF3FF" stroke-width="1.2" stroke-linecap="round">
+        <path d="M8.2 18.6v2.8M6.9 19.3l2.6 1.4M9.5 19.3l-2.6 1.4"></path>
+        <path d="M15.8 18.6v2.8M14.5 19.3l2.6 1.4M17.1 19.3l-2.6 1.4"></path>
+      </g>
+    </symbol>
+    <symbol id="i-fog" viewBox="0 0 24 24">
+      <path d="M7 14.8a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 16.9 5.3a4.6 4.6 0 0 1 .5 9.5H7Z" fill="url(#g-cloud)"></path>
+      <g stroke="#D7E0EA" stroke-width="1.6" stroke-linecap="round">
+        <path d="M4.2 18h12M7.2 21h12"></path>
+      </g>
+    </symbol>
+  </svg>
+
+  <div class="sky" aria-hidden="true">
+    <div class="sky__layer" data-sky="a"></div>
+    <div class="sky__layer" data-sky="b"></div>
+    <div class="sky__material"></div>
+    <div class="sky__celestial" id="skyCelestial" aria-hidden="true">
+      <span class="celestial__halo celestial__halo--sun"></span>
+      <span class="celestial__halo celestial__halo--moon"></span>
+      <span class="celestial__body celestial__body--sun"></span>
+      <span class="celestial__body celestial__body--moon">
+        <i></i><i></i><i></i>
+      </span>
+    </div>
+    <canvas id="atmosphere" class="sky__canvas"></canvas>
+    <div class="sky__vignette"></div>
+    <div class="sky__floor"></div>
+    <div class="sky__grain"></div>
+    <div class="sky__bolt" id="skyBolt" aria-hidden="true">
+      <svg viewBox="0 0 180 420" preserveAspectRatio="none">
+        <path id="boltBranch" d="" fill="none" stroke="#E5EEFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".72"></path>
+        <path id="boltPath" d="" fill="none" stroke="#F4F8FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+    <div class="sky__flash" id="skyFlash"></div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand" aria-label="Aer Weather">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="9.5" cy="8.2" r="3.4" fill="#FFE071"></circle>
+            <path d="M7.7 19.2a3.8 3.8 0 0 1-.6-7.5 5.1 5.1 0 0 1 9.8 1.9 3.9 3.9 0 0 1-.8 7.7H7.7Z" fill="#FFFFFF" opacity=".96"></path>
+          </svg>
+        </span>
+        <span class="brand__name">Aer</span>
+      </div>
+      <nav class="topbar__actions" aria-label="Weather controls">
+        <button class="glass-icon" id="locateButton" type="button" aria-label="Use my location" title="Use my location">
+          <svg class="icon" aria-hidden="true"><use href="#i-locate"></use></svg>
+        </button>
+        <button class="search-trigger glass-pill" id="searchTrigger" type="button" aria-haspopup="dialog" aria-label="Search for a place">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+          <span class="search-trigger__label">Search</span>
+        </button>
+        <div class="unit-toggle glass-segment" role="group" aria-label="Temperature units">
+          <button type="button" data-unit="f" class="is-active" aria-pressed="true">°F</button>
+          <button type="button" data-unit="c" aria-pressed="false">°C</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="dashboard">
+      <section class="hero" aria-labelledby="placeName">
+        <div class="hero__identity reveal" style="--delay: 260ms">
+          <div class="place-line">
+            <h1 class="place" id="placeName">Round Rock</h1>
+            <span class="place__region" id="placeRegion">Texas</span>
+          </div>
+          <div class="local">
+            <span id="localTime">—</span>
+            <span class="local__label" id="localLabel" hidden>Local</span>
+          </div>
+        </div>
+
+        <div class="temperature" id="temperatureBlock" aria-label="Temperature">
+          <span class="temperature__value" id="temperature">—</span>
+          <span class="temperature__degree" aria-hidden="true">°</span>
+        </div>
+
+        <div class="condition-row reveal" style="--delay: 520ms">
+          <svg class="wx-icon condition__icon" id="conditionIcon" aria-hidden="true">
+            <use id="conditionIconUse" href="#i-sun"></use>
+          </svg>
+          <p class="condition" id="condition">Reading the sky</p>
+        </div>
+
+        <div class="hero__meta reveal" style="--delay: 600ms">
+          <span id="todayRange">—</span>
+          <span class="meta-sep" aria-hidden="true">·</span>
+          <span id="feels">—</span>
+        </div>
+
+        <p class="sky-note reveal" id="skyNote" style="--delay: 680ms">Connecting to the weather service for Round Rock.</p>
+      </section>
+
+      <div class="bento">
+        <section class="card hourly-card reveal" style="--delay: 760ms" aria-labelledby="hourlyTitle">
+          <div class="card-head">
+            <h2 class="card-title" id="hourlyTitle">Hourly Forecast</h2>
+            <div class="card-head__right">
+              <span class="card-hint" id="scrubHint">Drag to preview</span>
+              <button class="preview-chip" id="backToNow" type="button" hidden>
+                <span id="previewLabel">Viewing</span>
+                <span class="preview-chip__action">Back to now</span>
+              </button>
+            </div>
+          </div>
+          <div class="chart" id="chart" tabindex="0" role="application" aria-describedby="chartHelp" aria-label="24 hour forecast. Drag to preview the sky, or use the arrow keys while focused." data-empty="true">
+            <svg id="chartSvg" aria-hidden="true"></svg>
+            <span class="chart__empty" id="chartEmpty">Reading the sky</span>
+            <div class="chart__crosshair" id="chartCrosshair" hidden></div>
+            <div class="chart__cursor" id="chartCursor" hidden></div>
+            <div class="chart__tooltip" id="chartTooltip" hidden>
+              <span class="chart__tooltip-time" id="tooltipTime">—</span>
+              <span class="chart__tooltip-temp" id="tooltipTemp">—</span>
+              <span class="chart__tooltip-condition" id="tooltipCondition">—</span>
+              <span class="chart__tooltip-meta" id="tooltipMeta">—</span>
+            </div>
+          </div>
+          <p class="sr-only" id="chartHelp">Use the left and right arrow keys to preview an hour. Press Escape to return to now.</p>
+          <div class="nowcast" id="nowcast" hidden>
+            <span class="nowcast__label" id="nowcastLabel">Rain</span>
+            <span class="nowcast__ticks" id="nowcastTicks" aria-hidden="true"></span>
+            <span class="nowcast__meta" id="nowcastMeta">Next 60 min</span>
+          </div>
+        </section>
+
+        <section class="card week-card reveal" style="--delay: 840ms" aria-labelledby="weekTitle">
+          <div class="card-head">
+            <h2 class="card-title" id="weekTitle">7-Day Forecast</h2>
+            <span class="card-hint">Rain · Low / High</span>
+          </div>
+          <ol class="week__list" id="weekList"></ol>
+        </section>
+
+        <section class="card sun-card reveal" style="--delay: 930ms" aria-label="Sun and moon path">
+          <div class="card-head">
+            <h2 class="card-title" id="solarLabel">Sun Path</h2>
+            <span class="card-hint" id="daylightLeft">—</span>
+          </div>
+          <div class="solar__figure" id="solarFigure">
+            <svg viewBox="0 0 380 158" id="solarSvg" aria-hidden="true">
+              <defs>
+                <radialGradient id="markerGlow">
+                  <stop offset="0%" stop-color="#F4BE79" stop-opacity=".5"></stop>
+                  <stop offset="45%" stop-color="#F4BE79" stop-opacity=".16"></stop>
+                  <stop offset="100%" stop-color="#F4BE79" stop-opacity="0"></stop>
+                </radialGradient>
+              </defs>
+              <path class="solar__track" id="solarTrack" d="M 30 132 A 160 108 0 0 1 350 132"></path>
+              <line class="solar__horizon" x1="10" y1="132" x2="370" y2="132"></line>
+              <g id="solarTicks"></g>
+              <g id="solarMarker">
+                <circle class="solar__halo" cx="0" cy="0" r="26" fill="url(#markerGlow)"></circle>
+                <circle class="solar__body" cx="0" cy="0" r="5.2"></circle>
+              </g>
+            </svg>
+            <div class="solar__caption">
+              <div>
+                <span class="solar__caption-label">Sunrise</span>
+                <strong id="sunrise">—</strong>
+              </div>
+              <div class="solar__caption-right">
+                <span class="solar__caption-label">Sunset</span>
+                <strong id="sunset">—</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="details-grid reveal" style="--delay: 1010ms">
+          <article class="card detail-card">
+            <div class="detail-head">
+              <span class="detail-label">Wind</span>
+              <svg class="icon detail-icon" aria-hidden="true"><use href="#i-wind"></use></svg>
+            </div>
+            <div class="detail-value-line">
+              <span class="compass" aria-hidden="true">
+                <svg class="icon compass__arrow" id="windArrow"><use href="#i-arrow"></use></svg>
+              </span>
+              <span class="detail-value"><span id="windValue">—</span><span class="detail-unit" id="windUnit"></span></span>
+            </div>
+            <span class="detail-sub" id="windDir">—</span>
+          </article>
+
+          <article class="card detail-card">
+            <div class="detail-head">
+              <span class="detail-label">Humidity</span>
+              <svg class="icon detail-icon" aria-hidden="true"><use href="#i-droplet"></use></svg>
+            </div>
+            <span class="detail-value" id="humidityValue">—</span>
+            <span class="detail-sub" id="dewText">—</span>
+          </article>
+
+          <article class="card detail-card">
+            <div class="detail-head">
+              <span class="detail-label">UV Index</span>
+              <svg class="icon detail-icon" aria-hidden="true"><use href="#i-uv"></use></svg>
+            </div>
+            <div class="detail-value-line">
+              <span class="detail-value" id="uvValue">—</span>
+              <span class="detail-sub" id="uvLabel"></span>
+            </div>
+            <div class="uv-meter" aria-hidden="true">
+              <span class="uv-marker" id="uvMarker"></span>
+            </div>
+          </article>
+
+          <article class="card detail-card fact--air" id="airFact">
+            <div class="detail-head">
+              <span class="detail-label" id="airLabel">Air Quality</span>
+              <svg class="icon detail-icon" aria-hidden="true"><use id="airIconUse" href="#i-leaf"></use></svg>
+            </div>
+            <div class="detail-value-line">
+              <span class="detail-value" id="airValue">—</span>
+              <span class="detail-sub" id="airCategory"></span>
+            </div>
+            <span class="detail-sub detail-sub--muted" id="airFoot">US AQI</span>
+          </article>
+
+          <article class="card detail-card">
+            <div class="detail-head">
+              <span class="detail-label">Visibility</span>
+              <svg class="icon detail-icon" aria-hidden="true"><use href="#i-eye"></use></svg>
+            </div>
+            <span class="detail-value" id="visibilityText">—</span>
+            <span class="detail-sub" id="visibilitySub">—</span>
+          </article>
+
+          <article class="card detail-card">
+            <div class="detail-head">
+              <span class="detail-label">Pressure</span>
+              <svg class="icon detail-icon" aria-hidden="true"><use href="#i-gauge"></use></svg>
+            </div>
+            <span class="detail-value" id="pressureText">—</span>
+            <span class="detail-sub" id="pressureSub">—</span>
+          </article>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__left">
+        <button class="update-button" id="refreshButton" type="button" title="Refresh weather">
+          <svg class="icon icon--refresh" aria-hidden="true"><use href="#i-refresh"></use></svg>
+          <span id="updatedAt">Reading the sky</span>
+          <span class="sr-only"> refresh weather</span>
+        </button>
+        <span class="status" id="status" role="status"></span>
+      </div>
+      <a class="footer__credit" href="https://open-meteo.com/" target="_blank" rel="noreferrer">Weather by Open-Meteo</a>
+      <div class="footer__coords" id="coords">30.51°N · 97.68°W</div>
+    </footer>
+  </div>
+
+  <dialog class="search-dialog" id="searchDialog" aria-labelledby="searchTitle">
+    <div class="search-panel">
+      <span class="sheet-handle" aria-hidden="true"></span>
+      <div class="search-panel__top">
+        <h2 class="search-kicker" id="searchTitle">Find a Place</h2>
+        <button class="search-close" id="searchClose" type="button" aria-label="Close search">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <label class="search-input-wrap" for="searchInput">
+        <svg class="icon search-input__icon" aria-hidden="true"><use href="#i-search"></use></svg>
+        <input id="searchInput" type="text" placeholder="Search a city" aria-label="Search a city" autocomplete="off" autocapitalize="off" spellcheck="false" role="combobox" aria-controls="searchResults" aria-autocomplete="list" aria-expanded="false">
+        <span class="search-pulse" id="searchPulse" hidden aria-hidden="true"></span>
+      </label>
+      <ul class="search-results" id="searchResults" role="listbox" aria-label="Search results"></ul>
+      <div class="search-empty" id="searchEmpty" hidden>No place by that name. Try a nearby city.</div>
+      <div class="search-suggestions" id="searchSuggestions">
+        <span class="search-kicker">Suggested</span>
+        <div class="suggestions" id="suggestions"></div>
+      </div>
+      <button class="locate-action" id="searchLocate" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-locate"></use></svg>
+        <span>Use My Location</span>
+        <span class="locate-action__hint">Auto</span>
+      </button>
+    </div>
+  </dialog>
+
+  <div class="sr-only" id="liveRegion" aria-live="polite"></div>
+  <div class="sr-only">
+    <table id="chartTable">
+      <caption>24 hour forecast</caption>
+      <thead><tr><th scope="col">Time</th><th scope="col">Temperature</th><th scope="col">Condition</th><th scope="col">Rain chance</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <noscript>
+    <p class="noscript">Aer needs JavaScript to read the sky. Please enable it for this page.</p>
+  </noscript>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
